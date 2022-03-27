@@ -25,8 +25,9 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $usuarios = User::paginate(5);
 
-        return view('home');
+        return view('home', compact('usuarios'));
     }
 
     public function changePassword()
@@ -50,6 +51,14 @@ class HomeController extends Controller
             'password' => Hash::make($request->newPassword)
         ));
 
-        return back()->with('status', 'La clave fue cambiada con exito');
+        return back()->with('status', 'The password was changed successfully');
+    }
+
+    public function search(Request $request)
+    {
+        $name = $request->all()['name'];
+        $usuarios = User::where('name','like',"%{$name}%")->paginate(5);
+
+        return view('home', compact('usuarios'));
     }
 }
