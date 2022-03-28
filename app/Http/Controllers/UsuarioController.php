@@ -7,13 +7,16 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Spatie\Permission\Models\Role;
 
 class UsuarioController extends Controller
 {
     public function index($user)
     {
         $usuario = User::whereId($user)->first();
-        return view('usuarios', compact('usuario'));
+        $roles = Role::all();
+        $usuarioRoleNames = $usuario->getRoleNames()->toArray();
+        return view('usuarios', compact('usuario', 'roles', 'usuarioRoleNames'));
     }
 
     public function update(Request $request, $user)
@@ -21,15 +24,23 @@ class UsuarioController extends Controller
         #validate
         $request->validate(array(
                 'name' => 'required',
-                'email' => 'required|email'
+                'email' => 'required|email',
+                'phone' => 'numeric|gt:0'
             )
         );
 
         $email = $request->email;
-        User::whereId($user)->update(array(
-            'name'  => $request->name,
-            'email' => $email,
+        $user = User::whereId($user)->first();
+        $user->update(array(
+            'name'      => $request->name,
+            'last_name' => $request->name,
+            'email'     => $email,
+            'phone'     => $request->phone,
+            'birthday'  => $request->birthday,
+            'addres'    => $request->addres,
         ));
+
+        $user->roles()->sync($request->roles);
 
         $this->sendNotificationEmail($email, 'Updated');
 

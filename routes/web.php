@@ -17,6 +17,7 @@ use App\Http\Controllers\UsuarioController;
 Auth::routes();
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('/user-edit/{user}', [UsuarioController::class, 'index'])->name('user-edit');
 Route::put('/user-edit/{user}', [UsuarioController::class, 'update'])->name('edit-user');
